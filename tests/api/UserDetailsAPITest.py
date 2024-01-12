@@ -8,7 +8,7 @@ headers = {
 }
 
 def test_user_details_api():
-    # Assuming make_post_request is a method within the APIUtil class
+    # Assuming get request is a method within the APIUtil class
     response = APIUtil.make_get_request("userdetails", headers)
     print(response.status_code)
     print(response.json())
