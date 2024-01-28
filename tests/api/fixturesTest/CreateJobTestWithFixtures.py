@@ -1,25 +1,29 @@
+import pytest
 import requests
 import sys
-import pytest
 
 sys.path.append("C:/Users/Admin/Desktop/Batches/Phoenix-Automation-Framework-Python/")
 from utils.APIUtil import APIUtil
 
-def test_create_job_request():
-    # Base URL
-    base_url = "http://139.59.91.96:9000/v1/job/create"
+# Fixture for base URL
+@pytest.fixture
+def base_url():
+    return "http://139.59.91.96:9000/v1/job/create"
 
-    # Generate a random IMEI
-    imei = APIUtil.generate_15_digit_random_number()
-
-    # Headers for authorization
-    headers = {
+# Fixture for headers
+@pytest.fixture
+def api_headers():
+    return {
     "Authorization" : "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6NCwiZmlyc3RfbmFtZSI6ImZkIiwibGFzdF9uYW1lIjoiZmQiLCJsb2dpbl9pZCI6ImlhbWZkIiwibW9iaWxlX251bWJlciI6Ijg4OTk3NzY2NTUiLCJlbWFpbF9pZCI6Im1hcmtAZ21haWwuY29tIiwicGFzc3dvcmQiOiI1ZjRkY2MzYjVhYTc2NWQ2MWQ4MzI3ZGViODgyY2Y5OSIsInJlc2V0X3Bhc3N3b3JkX2RhdGUiOm51bGwsImxvY2tfc3RhdHVzIjowLCJpc19hY3RpdmUiOjEsIm1zdF9yb2xlX2lkIjo1LCJtc3Rfc2VydmljZV9sb2NhdGlvbl9pZCI6MSwiY3JlYXRlZF9hdCI6IjIwMjEtMTEtMDNUMDg6MDY6MjMuMDAwWiIsIm1vZGlmaWVkX2F0IjoiMjAyMS0xMS0wM1QwODowNjoyMy4wMDBaIiwicm9sZV9uYW1lIjoiRnJvbnREZXNrIiwic2VydmljZV9sb2NhdGlvbiI6IlNlcnZpY2UgQ2VudGVyIEEiLCJpYXQiOjE3MDI4MDg3NzJ9.QzL9sFsnq3mvBMOZee6qISSfy6cRKNpbOTAMlNpwWNQ",
         "Content-Type": "application/json"
     }
 
-    # Payload data
-    payload = {
+# Fixture for payload
+@pytest.fixture
+def api_payload():
+    imei = APIUtil.generate_15_digit_random_number()
+
+    return {
         "mst_service_location_id": 0,
         "mst_platform_id": 2,
         "mst_warrenty_status_id": 1,
@@ -59,15 +63,14 @@ def test_create_job_request():
         ]
     }
 
+# Test using fixtures
+def test_create_job_request(base_url, api_headers, api_payload):
     # Make the POST request
-    response = requests.post(base_url, headers=headers, json=payload)
+    response = requests.post(base_url, headers=api_headers, json=api_payload)
     print("Status Code:", response.status_code)
     print("Response Body:", response.text)
+
     # Assertions
     assert response.status_code == 200, f"Expected status code 200, but got {response.status_code}"
     assert "Job created successfully" in response.json()["message"], "Unexpected message in response"
     assert "data" in response.json(), "Response does not contain 'data' field"
-
-    
-
-
